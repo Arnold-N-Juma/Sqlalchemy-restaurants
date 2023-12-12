@@ -48,7 +48,6 @@ target_restaurant = session.query(Restaurant).filter_by(name=target_restaurant_n
 
 if target_restaurant:
     john_doe = session.query(Customer).filter_by(full_name="John Doe").first()
-    john_doe.add_review(target_restaurant, rating=4)
     print(f"Review added by {john_doe.full_name()} for {target_restaurant_name}.")
 else:
     print(f"Restaurant '{target_restaurant_name}' not found.")

@@ -1,4 +1,3 @@
-# seeds.py
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, Customer, Review, Restaurant
@@ -11,9 +10,6 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-# Sample data creation and testing
-# ... (create instances of Restaurant, Customer, and Review and test the methods)
-# seeds.py
 
 # Sample Restaurants
 restaurant1 = Restaurant(name="Tasty Bites", price=3)
@@ -32,6 +28,5 @@ review3 = Review(star_rating=3, customer=customer3, restaurant=restaurant2)
 review4 = Review(star_rating=5, customer=customer1, restaurant=restaurant2)
 review5 = Review(star_rating=2, customer=customer2, restaurant=restaurant3)
 
-# Add instances to the session and commit
 session.add_all([restaurant1, restaurant2, restaurant3, customer1, customer2, customer3, review1, review2, review3, review4, review5])
 session.commit()
