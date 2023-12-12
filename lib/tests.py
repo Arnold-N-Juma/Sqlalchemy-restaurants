@@ -1,43 +1,56 @@
-# tests.py
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Base, Restaurant, Customer, Review  
+from models import Base,Customer, Review, Restaurant
 
-# Create engine and bind it to the Base
 engine = create_engine('sqlite:///restaurants.db', echo=True)
-Base.metadata.bind = engine
-
-#Restaurant CRUD
+Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
 session = Session()
 
-# Example 1: Accessing reviews for a restaurant
-restaurant_reviews = session.query(Restaurant).first().all_reviews()
-print("Reviews for the first restaurant:")
-print(restaurant_reviews)
+print("Full names")
 
-# Example 2: Accessing restaurants for a customer
-customer_restaurants = session.query(Customer).first().restaurants()
-print("Restaurants reviewed by the first customer:")
-print(customer_restaurants)
+all_customer=session.query(Customer).all()
+for customer in all_customer:
+    print(customer.first_name, customer.last_name)
 
-# Example 3: Finding the fanciest restaurant
-fanciest_restaurant = Restaurant.fanciest()
-print("Fanciest restaurant:")
-print(fanciest_restaurant.name)
+print("restuarant name")
 
-# Example 4: Adding a review for a customer
-customer_to_review = session.query(Customer).first()
-restaurant_to_review = session.query(Restaurant).first()
-customer_to_review.add_review(restaurant_to_review, rating=4)
+all_restaurant=session.query(Restaurant).limit(1)
+for restaurant in all_restaurant:
+  print(restaurant.name, restaurant.price)
+  
+  #get reviews
+target_restaurant_name = "Tasty Bites"
+target_restaurant = session.query(Restaurant).filter_by(name=target_restaurant_name).first()
 
-# Example 5: Deleting reviews for a restaurant
-customer_with_reviews = session.query(Customer).first()
-restaurant_to_delete_reviews = session.query(Restaurant).first()
-customer_with_reviews.delete_reviews(restaurant_to_delete_reviews)
+if target_restaurant:
+    print(f"Reviews for {target_restaurant_name}:")
+    for review in target_restaurant.reviews:
+        print(f"{review.customer.full_name()}: {review.star_rating} stars")
+else:
+    print(f"Restaurant '{target_restaurant_name}' not found.")
 
-# ... add more examples as needed
+#Get Reviews from a specific Customer
+target_customer_name = "John Doe"
+target_customer = session.query(Customer).filter_by(full_name=target_customer_name).first()
 
-# Commit changes
-session.commit()
+if target_customer:
+    print(f"Reviews given by {target_customer_name}:")
+    for review in target_customer.reviews:
+        print(f"{review.restaurant.name}: {review.star_rating} stars")
+else:
+    print(f"Customer '{target_customer_name}' not found.")
+    
+# Add Reviews
+target_restaurant_name = "Spicy Haven"
+target_restaurant = session.query(Restaurant).filter_by(name=target_restaurant_name).first()
+
+if target_restaurant:
+    john_doe = session.query(Customer).filter_by(full_name="John Doe").first()
+    john_doe.add_review(target_restaurant, rating=4)
+    print(f"Review added by {john_doe.full_name()} for {target_restaurant_name}.")
+else:
+    print(f"Restaurant '{target_restaurant_name}' not found.")
+
+

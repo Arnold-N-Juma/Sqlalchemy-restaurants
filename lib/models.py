@@ -1,7 +1,9 @@
+from sqlalchemy import create_engine
 from sqlalchemy import Column, Text, Integer, String, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql import func
 
+engine = create_engine('sqlite:///restaurants.db', echo=True)
 Base = declarative_base()
 
 class Review(Base):
@@ -11,8 +13,8 @@ class Review(Base):
     customer_id = Column(Integer, ForeignKey("customers.id"))
     restaurant_id = Column(Integer(), ForeignKey("restaurants.id"))
     
-    customer = relationship('Customer', back_populates='reviews')
-    restaurant = relationship('Restaurant', back_populates='reviews')
+    customers = relationship('Customer', back_populates='reviews')
+    restaurants = relationship('Restaurant', back_populates='reviews')
     
     def customer(self):
         return self.customer
@@ -29,7 +31,7 @@ class Restaurant(Base):
     name = Column(String())
     price = Column(Integer())
     
-    reviews = relationship('Review', back_populates='restaurant')
+    reviews = relationship('Review', back_populates='restaurants')
     
     def get_reviews(self):
         return self.reviews
@@ -42,7 +44,7 @@ class Restaurant(Base):
         return session.query(cls).order_by(cls.price.desc()).first()
      
     def all_reviews(self):
-        return [review.full_review() for review in self.reviews]
+        return self.reviews
 
 class Customer(Base):
     __tablename__ = "customers"
@@ -50,7 +52,7 @@ class Customer(Base):
     first_name = Column(String())
     last_name = Column(String())
    
-    reviews = relationship("Review", back_populates='customer')
+    reviews = relationship("Review", back_populates='customers')
    
     def get_reviews(self):
         return self.reviews

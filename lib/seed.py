@@ -1,10 +1,10 @@
 # seeds.py
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Base, Restaurant, Customer, Review
+from models import Base, Customer, Review, Restaurant
 
 # Create engine and bind it to the Base
-engine = create_engine("sqlite:///database.sqlite")
+engine = create_engine('sqlite:///restaurants.db', echo=True)
 Base.metadata.create_all(engine)
 
 # Create a Session
